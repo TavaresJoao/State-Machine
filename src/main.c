@@ -28,6 +28,10 @@ unsigned int spi_it = 0;
 // Os files simularao os barrametos de dados
 FILE *file_uart, *file_spi;
 
+// array de testes
+unsigned i_dados=0;
+char dados[] = {7, 8, STX, 0xBB, 0xAA, 5, 't', 'e', 's', 't', 'e', 0x8F, ETX};
+
 int trocar = 0;
 
 int main(int argc, char const *argv[])
@@ -44,17 +48,21 @@ int main(int argc, char const *argv[])
   signal(SIGALRM, timeout);         // alarme
 
   // inciar as máquinas de estados
-  InitSM(&sm1, 1000, tratar_uart);
-  InitSM(&sm2, 2000, tratar_spi);
+  InitSM(&sm1, 43707, tratar_uart);
+  //InitSM(&sm2, 10, tratar_spi);
 
   // loop do micro
   while(1)
   {
-    while(uart_it)
-      ExecSM(&sm1, uart_buf[uart_it--]);
+    /*
+    while(uart_it){
+      //printf("Exec: %c\n", uart_buf[uart_it-1]);
+      ExecSM(&sm1, uart_buf[--uart_it]);
+    }
 
     while(spi_it)
-      ExecSM(&sm2, spi_buf[spi_it--]);
+      ExecSM(&sm2, spi_buf[spi_it--]);*/
+    ExecSM(&sm1, dados[i_dados++]);
 
     // pausa o código ate cheagr um sinal
     pause();
@@ -67,6 +75,7 @@ int main(int argc, char const *argv[])
 
 void interrupt_uart(int sigN)
 {
+  /*
   if(trocar==0)
   {
     uart_buf[uart_it++] = (char) fgetc(file_uart);
@@ -77,7 +86,8 @@ void interrupt_uart(int sigN)
     spi_buf[spi_it++] = (char) fgetc(file_spi);
     trocar = 0;
   }
-
+  */
+  //uart_buf[uart_it++] = (char) fgetc(file_uart);
 }
 
 void interrupt_spi(int sigN)
