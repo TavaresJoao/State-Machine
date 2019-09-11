@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 #include "sm.h"
 
 #define TRUE 1
@@ -26,6 +28,8 @@ unsigned int spi_it = 0;
 // Os files simularao os barrametos de dados
 FILE *file_uart, *file_spi;
 
+int trocar = 0;
+
 int main(int argc, char const *argv[])
 {
   // abrindo os arquivos ("incicializando" as interfaces)
@@ -34,7 +38,6 @@ int main(int argc, char const *argv[])
 
   if(file_uart==NULL || file_spi==NULL)
     return 1;
-
   // os sinais vao "simular" as interrupcoes
   signal(SIGINT,  interrupt_uart);  // ctrl+C
   signal(SIGTSTP, interrupt_spi);   // ctrl+Z
@@ -56,12 +59,25 @@ int main(int argc, char const *argv[])
     // pausa o código ate cheagr um sinal
     pause();
   }
+
+  fclose(file_uart);
+  fclose(file_spi);
   return 0;
 }
 
 void interrupt_uart(int sigN)
 {
-  uart_buf[uart_it++] = (char) fgetc(file_uart);
+  if(trocar==0)
+  {
+    uart_buf[uart_it++] = (char) fgetc(file_uart);
+    trocar = 1;
+  }
+  else
+  {
+    spi_buf[spi_it++] = (char) fgetc(file_spi);
+    trocar = 0;
+  }
+
 }
 
 void interrupt_spi(int sigN)
@@ -76,10 +92,10 @@ void timeout(int sigN)
 
 void tratar_uart(char *string)
 {
-  printf("Pacote recebido na uart: %s\n", string);
+  printf("\nPacote recebido na uart: %s\n", string);
 }
 
 void tratar_spi(char *string)
 {
-  printf("Pacote recebido na spi: %s\n", string);
+  printf("\nPacote recebido na spi: %s\n", string);
 }

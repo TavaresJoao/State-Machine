@@ -1,4 +1,6 @@
-void InitSM(sm_t *sm, shor addr, handle_t handle)
+#include "sm.h"
+
+void InitSM(sm_t *sm, short addr, handle_t handle)
 {
   sm->state = ST_STX;
   sm->my_addr = addr;
