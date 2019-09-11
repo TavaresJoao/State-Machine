@@ -21,7 +21,7 @@ static void fn_STX(sm_t *sm, char data)
     sm->state = ST_ADDR;
 }
 
-static void fn_ADDR()
+static void fn_ADDR(sm_t *sm, char data)
 {
-  
+  if()
 }
